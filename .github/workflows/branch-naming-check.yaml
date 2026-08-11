@@ -18,13 +18,13 @@ jobs:
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           
           # Allowed patterns
-          REGEX="^(feature|bugfix|translation|docs|structure)/.+"
+          REGEX="^(feature|bugfix|translation|docs|structure|activity)/.+"
           
           echo "Verifying branch: $BRANCH_NAME"
           
           if [[ ! $BRANCH_NAME =~ $REGEX ]]; then
             echo "::error title=Naming Convention Violation::Branch '$BRANCH_NAME' does not match the required format."
-            echo "Please rename your branch to one of: feature/, bugfix/, translation/, docs/, or structure/"
+            echo "Please rename your branch to one of: feature/, bugfix/, translation/, docs/, structure/, or activity/"
             exit 1
           fi
           
