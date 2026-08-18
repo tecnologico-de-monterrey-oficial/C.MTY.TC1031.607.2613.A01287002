@@ -14,6 +14,8 @@ public:
     T getData(int index) const;
     int getSize() const;
     T getMax() const;
+    void insertAt(int index, T data);
+    void removeAt(int index);
     void print() const;
 
 private:
@@ -64,6 +66,24 @@ void List<T>::print() const {
         std::cout << "-" << " ";
         std::cout << list[index] << std::endl;
     }
+}
+
+template <typename T>
+void List<T>::insertAt(int index, T data) {
+    if (index < 0 || index > size) {
+        throw std::out_of_range("Index out of bounds");
+    }
+    list.insert(list.begin() + index, data);
+    size++;
+}
+
+template <typename T>
+void List<T>::removeAt(int index) {
+    if (index < 0 || index >= size) {
+        throw std::out_of_range("Index out of bounds");
+    }
+    list.erase(list.begin() + index);
+    size--;
 }
 
 template <typename T>

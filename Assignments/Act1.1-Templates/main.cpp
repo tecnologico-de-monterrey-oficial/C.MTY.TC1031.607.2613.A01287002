@@ -32,5 +32,9 @@ int main() {
     intList.print();
     intList.removeLast();
     intList.print();
+    intList.insertAt(2, 99);
+    intList.print();
+    intList.removeAt(1);
+    intList.print();
     return 0;
 }
