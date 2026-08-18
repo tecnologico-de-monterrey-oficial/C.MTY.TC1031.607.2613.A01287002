@@ -9,9 +9,9 @@ cmake --build build --config Release
 Act1.1-Templates
 ├── [1;33m__release__[0m
 │   └── [32mActividadTemplates.exe[0m
-├── [1;34mlib[0m
-│   └── [36mlist.h[0m
-├── [35mBATME.md[0m
-├── [35mCMakeLists.txt[0m
-└── [36mmain.cpp[0m
+├── [90mlib[0m
+│   └── [90mlist.h[0m
+├── [90mBATME.md[0m
+├── [90mCMakeLists.txt[0m
+└── [90mmain.cpp[0m
 ```
