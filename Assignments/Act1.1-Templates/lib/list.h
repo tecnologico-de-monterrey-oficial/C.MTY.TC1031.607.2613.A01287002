@@ -79,6 +79,9 @@ void List<T>::insertAt(int index, T data) {
 
 template <typename T>
 void List<T>::removeAt(int index) {
+    if(size == 0) {
+        throw std::out_of_range("List is empty");
+    }
     if (index < 0 || index >= size) {
         throw std::out_of_range("Index out of bounds");
     }
