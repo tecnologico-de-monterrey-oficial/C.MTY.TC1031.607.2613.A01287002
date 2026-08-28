@@ -13,6 +13,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <utility>
 
 template <typename T>
 int binarySearch(const std::vector<T>& arr, T val, int p1=0, int p2= -1) {
@@ -24,4 +25,36 @@ int binarySearch(const std::vector<T>& arr, T val, int p1=0, int p2= -1) {
     if(arr.at(mid) == val) {return mid;} 
     else if(arr.at(mid) < val) {return binarySearch(arr, val, mid+1, p2);} 
     else {return binarySearch(arr, val, p1, mid-1);}
+}
+
+template <typename T>
+int linearSearch(const std::vector<T>& arr, T val) {
+    for (int i = 0; i < arr.size(); i++) {
+        if (arr.at(i) == val) {return i;}
+    }
+    return -1;
+}
+
+template <typename T>
+void swapSort(std::vector<T>& arr) {
+    for (size_t p1 = 0; p1 < arr.size(); p1++) {
+        for (size_t p2 = p1 + 1; p2 < arr.size(); p2++) {
+            if (arr[p1] > arr[p2]) {
+                std::swap(arr[p1], arr[p2]);
+            }
+        }
+    }
+}
+
+template <typename T>
+void bubbleSort(std::vector<T>& arr) {
+    size_t p1 = 0;
+    while (p1 + 1 < arr.size()) {
+        if (arr[p1] > arr[p1 + 1]) {
+            std::swap(arr[p1], arr[p1 + 1]);
+            p1 = 0;
+        } else {
+            p1++;
+        }
+    }
 }

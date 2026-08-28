@@ -15,10 +15,17 @@
 #include <vector>
 
 int main() {
-    std::vector<int> arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    std::vector<double> arr2 = {1, 2, 3, 4, 5, 6.7, 7, 8, 9, 10};
+    std::vector<int> arr = {5, 2, 1, 4, 3};
+    std::vector<int> arr2 = {3, 45, 12, 54, 13, 66, 2};
 
-    std::cout << "El número 5 está en el indice " << binarySearch(arr, 5) << std::endl;
-    std::cout << "El número 6.7 está en el indice " << binarySearch(arr2, 6.7) << std::endl;
+    bubbleSort(arr2);
+    std::cout << "Array: ";
+    for (const auto& val : arr2) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+
+    // std::cout << "El número 5 está en el indice " << binarySearch(arr, 5) << std::endl;
+    // std::cout << "El número 6.7 está en el indice " << binarySearch(arr2, 6.7) << std::endl;
     return 0;
 }
