@@ -58,3 +58,29 @@ void bubbleSort(std::vector<T>& arr) {
         }
     }
 }
+
+template <typename T>
+void selectionSort(std::vector<T>& arr) {
+    for(size_t i = 0; i < arr.size(); i++) {
+        size_t minIdx = i;
+        for(size_t j=i; j<arr.size(); j++) {
+            if(arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        std::swap(arr[i], arr[minIdx]);
+    }
+}
+
+template <typename T>
+void insertionSort(std::vector<T>& arr) {
+    for(size_t i=1; i < arr.size(); i++) {
+        T key = arr[i];
+        size_t j = i;
+        while (j > 0 && arr[j - 1] > key) {
+            arr[j] = arr[j - 1];
+            j--;
+        }
+        arr[j] = key;
+    }
+}

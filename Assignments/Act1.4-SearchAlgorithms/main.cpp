@@ -16,9 +16,15 @@
 
 int main() {
     std::vector<int> arr = {5, 2, 1, 4, 3};
-    std::vector<int> arr2 = {3, 45, 12, 54, 13, 66, 2};
+    std::vector<int> arr2 = {3, 45, 12, 54, 13, 66, 2, 67};
+    
+    std::cout << "Array: ";
+    for (const auto& val : arr2) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
 
-    bubbleSort(arr2);
+    insertionSort(arr2);
     std::cout << "Array: ";
     for (const auto& val : arr2) {
         std::cout << val << " ";
