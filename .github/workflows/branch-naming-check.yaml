@@ -18,7 +18,7 @@ jobs:
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           
           # Allowed patterns
-          REGEX="^(feature|bugfix|translation|docs|structure|activity)/.+"
+          REGEX="^(feature|bugfix|translation|docs|structure|activity|evidences)/.+"
           
           echo "Verifying branch: $BRANCH_NAME"
           
