@@ -22,6 +22,7 @@ allowedPrefixes=(
     "feature/" "bugfix/" "enhancement/" "hotfix/" 
     "docs/" "structure/" "assets/" "tests/" 
     "experiment/" "release/" "activity/"
+    "evidences/"
 )
 revertRegex="^revert-[0-9]{1,5}-[0-9]{1,5}-"
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
