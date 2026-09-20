@@ -18,6 +18,17 @@
 #include <cstdint>
 #include <stdint.h>
 
+#define prettyPrintStatus(status) \
+    (status == ERROR_NONE ? "No Error" : \
+    (status == ERROR_CORRECTED_DATA ? "Corrected Data Error" : \
+    (status == ERROR_CORRECTED_PARITY ? "Corrected Parity Error" : "Double Error Detected")))
+
+#define printIPAddress(ip) \
+    +ip.a << "." << +ip.b << "." << +ip.c << "." << +ip.d
+
+#define printDayTime(dt) \
+    +dt.year << "-" << +dt.month << "-" << +dt.day << " " << +dt.hour << ":" << +dt.minute << ":" << +dt.second
+
 typedef enum { ERROR_NONE, ERROR_CORRECTED_DATA, ERROR_CORRECTED_PARITY, ERROR_DOUBLE } Status;
 
 // --- Common SEC-DED Utilities ---
