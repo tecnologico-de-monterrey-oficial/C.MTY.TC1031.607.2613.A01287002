@@ -1,0 +1,2 @@
+Evidences/Evidence1/data/log607-1.txt filter=lfs diff=lfs merge=lfs -text
+Evidences/Evidence1/data/log607-2.txt filter=lfs diff=lfs merge=lfs -text
