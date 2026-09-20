@@ -23,7 +23,7 @@ int main() {
     std::cout << std::endl;
 
     // Test DayTime
-    struct DayTime dt = {2024, 2, 29, 14, 30, 45};
+    DayTime dt = {2024, 2, 29, 14, 30, 45};
     std::cout << "DayTime: " << printDayTime(dt) << std::endl;
     encodeDayTime(&dt);
     std::cout << "SEC-DED Parity: " << +dt.sec_ded << std::endl;

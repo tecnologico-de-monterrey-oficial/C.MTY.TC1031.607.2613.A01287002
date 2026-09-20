@@ -64,7 +64,7 @@ typedef struct __attribute__((packed)) {
     uint_least8_t sec_ded;
 } IPAddressSEC_DED;
 
-// Look on attachments/parityMatrixGen.py for the generation of the P_MATRIX
+// Look on attachments/parityMatrixGen.py for the generation of the P_MATRIX [R26]
 static const uint8_t IPV4_P_MATRIX[32] = {
     0x07, 0x0B, 0x0D, 0x0E, 0x13, 0x15, 0x16, 0x19,
     0x1A, 0x1C, 0x23, 0x25, 0x26, 0x29, 0x2A, 0x2C,
@@ -96,7 +96,6 @@ static inline uint8_t computeIPParity(IPAddress ip) {
 }
 
 // --- SEC-DED version of IPV4 ---
-
 void intToIpSEC_DED(IPAddressSEC_DED *packet) {
     packet->sec_ded = computeIPParity(packet->ip);
 }
@@ -129,7 +128,7 @@ Status verifyAndCorrect(IPAddressSEC_DED *packet) {
 
 // --- Date ---
 // SEC-DED included because of struct size 
-struct DayTime {
+typedef struct {
     uint_least16_t year;
     uint_least8_t month;
     uint_least8_t day;
@@ -137,9 +136,9 @@ struct DayTime {
     uint_least8_t minute;
     uint_least8_t second;
     uint_least8_t sec_ded;
-};
+} DayTime;
 
-// Retrieved from /../attachments/parityMatrixGen.py R30
+// Look on attachments/parityMatrixGen.py for the generation of the P_MATRIX [R30]
 static const uint8_t DATE_P_MATRIX[56] = {
     0x07, 0x0B, 0x0D, 0x0E, 0x13, 0x15, 0x16, 0x19,
     0x1A, 0x1C, 0x23, 0x25, 0x26, 0x29, 0x2A, 0x2C,
@@ -151,9 +150,8 @@ static const uint8_t DATE_P_MATRIX[56] = {
 };
 
 // --- Bit Serialization Helpers ---
-
 // Packs 56 data bits across year..second into a 64-bit integer bitfield
-static inline uint64_t daytimeToU64(const struct DayTime *dt) {
+static inline uint64_t daytimeToU64(const DayTime *dt) {
     return ((uint64_t)(dt->year & 0xFFFF)   << 40) |
            ((uint64_t)(dt->month & 0xFF)    << 32) |
            ((uint64_t)(dt->day & 0xFF)      << 24) |
@@ -163,7 +161,7 @@ static inline uint64_t daytimeToU64(const struct DayTime *dt) {
 }
 
 // Unpacks 64-bit integer bitfield back into individual DayTime fields
-static inline void u64ToDayTime(uint64_t val, struct DayTime *dt) {
+static inline void u64ToDayTime(uint64_t val, DayTime *dt) {
     dt->year   = (val >> 40) & 0xFFFF;
     dt->month  = (val >> 32) & 0xFF;
     dt->day    = (val >> 24) & 0xFF;
@@ -173,9 +171,8 @@ static inline void u64ToDayTime(uint64_t val, struct DayTime *dt) {
 }
 
 // --- SEC-DED Implementation ---
-
 // Computes parity byte using XOR over active bit positions in DATE_P_MATRIX
-uint8_t computeDayTimeParity(const struct DayTime *dt) {
+uint8_t computeDayTimeParity(const DayTime *dt) {
     uint64_t data = daytimeToU64(dt);
     uint8_t parity = 0;
     for (int i = 0; i < 56; i++) {
@@ -187,11 +184,11 @@ uint8_t computeDayTimeParity(const struct DayTime *dt) {
 }
 
 // Calculates parity and assigns it to dt->sec_ded
-void encodeDayTime(struct DayTime *dt) {
+void encodeDayTime(DayTime *dt) {
     dt->sec_ded = computeDayTimeParity(dt);
 }
 
-Status verifyAndCorrectDayTime(struct DayTime *dt) {
+Status verifyAndCorrectDayTime(DayTime *dt) {
     uint8_t calculated_parity = computeDayTimeParity(dt);
     uint8_t syndrome = calculated_parity ^ dt->sec_ded;
 
@@ -221,13 +218,12 @@ Status verifyAndCorrectDayTime(struct DayTime *dt) {
 }
 
 // --- User Date Conversion Logic ---
-
 // Returns standard cumulative days since March 1st for a given month index (offset by 3)
 static inline int daysSinceMarch(int month) {
     return (month * 367) / 12;
 }
 
-uint64_t dateToInt(struct DayTime dt) {
+uint64_t dateToInt(const DayTime dt) {
     uint_least16_t y = dt.year;
     uint_least8_t m = dt.month;
 
@@ -250,8 +246,8 @@ uint64_t dateToInt(struct DayTime dt) {
 }
 
 // Safely converts struct to total seconds, repairing bit flips prior to conversion
-bool safeDateToInt(struct DayTime *dt, uint64_t *out_seconds) {
-    Status status = verifyAndCorrectDayTime(dt);
+bool safeDateToInt(const DayTime *dt, uint64_t *out_seconds) {
+    Status status = verifyAndCorrectDayTime((DayTime *)dt);
     if (status == ERROR_DOUBLE) {
         return false; // Fatal double-bit corruption
     }
