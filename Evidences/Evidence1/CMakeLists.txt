@@ -37,7 +37,7 @@ if(ALL_TARGET_NAMES)
         COMMAND ${CMAKE_COMMAND}
             -DRELEASE_DIR=${RELEASE_OUTPUT_DIR}
             -DTARGET_NAMES="${ALL_TARGET_NAMES}"
-            -P ${CMAKE_SOURCE_DIR}/finalize_hashes.cmake
+            -P ${CMAKE_SOURCE_DIR}/cmake/finalizeHashes.cmake
         COMMENT "Testing all executable hashes and updating __release__/hash.txt..."
     )
 
