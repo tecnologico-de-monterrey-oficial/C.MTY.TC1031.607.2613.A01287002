@@ -2,6 +2,9 @@
 #include <iostream>
 
 int main() {
+    // --------------
+    // Test IP Address
+    // --------------
     IPAddress ip = {192, 168, 1, 1};
     std::cout << "IP Address: " << printIPAddress(ip) << std::endl;
     uint32_t ip_int = ipToInt(ip);
@@ -22,7 +25,9 @@ int main() {
     std::cout << "Corrected IP Address: " << printIPAddress(packet.ip) << std::endl;
     std::cout << std::endl;
 
+    // --------------
     // Test DayTime
+    // --------------
     DayTime dt = {2024, 2, 29, 14, 30, 45};
     std::cout << "DayTime: " << printDayTime(dt) << std::endl;
     encodeDayTime(&dt);
