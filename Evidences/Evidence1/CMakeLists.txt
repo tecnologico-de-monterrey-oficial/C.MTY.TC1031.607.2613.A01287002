@@ -26,7 +26,7 @@ foreach(SOURCE_FILE IN LISTS SRC_FILES)
     get_filename_component(TARGET_NAME "${SOURCE_FILE}" NAME_WE)
     
     # Pass target name and source path as distinct, quoted arguments
-    add_executable("${TARGET_NAME}" "${SOURCE_FILE}")
+    add_executable("${TARGET_NAME}" "${SOURCE_FILE}" "${CMAKE_SOURCE_DIR}/lib/processing.cpp")
     
     list(APPEND ALL_TARGET_NAMES "${TARGET_NAME}")
 endforeach()
