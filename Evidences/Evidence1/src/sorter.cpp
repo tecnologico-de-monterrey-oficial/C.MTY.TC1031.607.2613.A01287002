@@ -135,6 +135,18 @@ int main() {
             case 4:
                 algorithm.introSort(entries);
                 break;
+            case 5:
+                algorithm.swapSort(entries);
+                break;
+            case 6:
+                algorithm.bubbleSort(entries);
+                break;
+            case 7:
+                algorithm.selectionSort(entries);
+                break;
+            case 8:
+                algorithm.insertionSort(entries);
+                break; 
         }
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
@@ -183,6 +195,34 @@ int main() {
                 std::cout << "   Average space complexity: O(log n)" << std::endl;
                 std::cout << "   Best time complexity    : O(n log n)" << std::endl;
                 std::cout << "   Worst time complexity   : O(n log n)" << std::endl;
+                break;
+            case 5:
+                std::cout << "Algorithm used: Swap Sort" << std::endl;
+                std::cout << "   Average time complexity: O(n^2)" << std::endl;
+                std::cout << "   Average space complexity: O(1)" << std::endl;
+                std::cout << "   Best time complexity    : O(n^2)" << std::endl;
+                std::cout << "   Worst time complexity   : O(n^2)" << std::endl;
+                break;
+            case 6:
+                std::cout << "Algorithm used: Bubble Sort" << std::endl;
+                std::cout << "   Average time complexity: O(n^2)" << std::endl;
+                std::cout << "   Average space complexity: O(1)" << std::endl;
+                std::cout << "   Best time complexity    : O(n)" << std::endl;
+                std::cout << "   Worst time complexity   : O(n^2)" << std::endl;
+                break;
+            case 7:
+                std::cout << "Algorithm used: Selection Sort" << std::endl;
+                std::cout << "   Average time complexity: O(n^2)" << std::endl;
+                std::cout << "   Average space complexity: O(1)" << std::endl;
+                std::cout << "   Best time complexity    : O(n^2)" << std::endl;
+                std::cout << "   Worst time complexity   : O(n^2)" << std::endl;
+                break;
+            case 8:
+                std::cout << "Algorithm used: Insertion Sort" << std::endl;
+                std::cout << "   Average time complexity: O(n^2)" << std::endl;
+                std::cout << "   Average space complexity: O(1)" << std::endl;
+                std::cout << "   Best time complexity    : O(n)" << std::endl;
+                std::cout << "   Worst time complexity   : O(n^2)" << std::endl;
                 break;
         }
 
