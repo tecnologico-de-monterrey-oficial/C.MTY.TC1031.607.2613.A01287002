@@ -70,6 +70,19 @@ public:
 
     template <typename T>
     void introSort(std::vector<T> &data, int left, int right, int depthLimit);
+
+    // -- the rest --
+    template <typename T>
+    void swapSort(std::vector<T>& arr);
+
+    template <typename T>
+    void bubbleSort(std::vector<T>& arr);
+
+    template <typename T>
+    void selectionSort(std::vector<T>& arr);
+
+    template <typename T>
+    void insertionSort(std::vector<T>& arr);
 };
 
 #include "processing.tpp"
