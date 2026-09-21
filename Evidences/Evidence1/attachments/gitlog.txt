@@ -1,0 +1,51 @@
+// Archivo generado usando git reflog
+// Evidencias externas: PRs e Issues. 
+
+10e4d90 (HEAD -> main, origin/main, origin/HEAD) HEAD@{0}: pull: Fast-forward
+69653d0 HEAD@{1}: checkout: moving from evidences/evidence1/final-delivery to main
+db2d0ae (evidences/evidence1/final-delivery) HEAD@{2}: commit: Added everythin
+0c453f6 HEAD@{3}: commit: Enter cin
+32f29c5 HEAD@{4}: commit: lib/ -> include/
+ee4ea3a HEAD@{5}: commit: Range607.txt savefile
+cdfcd3a HEAD@{6}: commit: evidences/evidence1/out/*, exception of gitkeep
+785b531 HEAD@{7}: commit: Target executable change for processing.cpp
+ca17151 HEAD@{8}: commit: Added mockup state machine (got a bit more complex afterwards)
+702ee61 HEAD@{9}: commit: Endpoint implementation
+c5d9b25 HEAD@{10}: commit: Lambda to flip bit correctly
+9e07e8f HEAD@{11}: commit: out dir
+ae6789b HEAD@{12}: commit: Moved algorithms to tpp file
+86d052f HEAD@{13}: commit: Parse log & merge sort implemented
+c6c6982 HEAD@{14}: commit: Separated parser & algorithm into different file formats.
+a0e3c9a HEAD@{15}: commit: inline functions and removed depricated methods
+69653d0 HEAD@{16}: checkout: moving from main to evidences/evidence1/final-delivery
+69653d0 HEAD@{17}: pull: Fast-forward
+e770d79 HEAD@{18}: checkout: moving from evidences/evidence1/processing-lib to main
+c59db17 HEAD@{19}: commit: Added processing libraries
+e770d79 HEAD@{20}: checkout: moving from main to evidences/evidence1/processing-lib
+e770d79 HEAD@{21}: pull: Fast-forward
+a087bc4 HEAD@{22}: checkout: moving from evidences/evidence1/structure to main
+8c4ec7b HEAD@{23}: commit: Corrected cmake helper script location
+429ebdf HEAD@{24}: commit: CMake helper script for __release__/hash.txt
+413c3f3 HEAD@{25}: commit: CMakeLists generates executable hashes & is no longer hardcoded to an endpoint
+04bbf38 HEAD@{26}: commit: Renamed main to sec-ded-test
+a087bc4 HEAD@{27}: checkout: moving from main to evidences/evidence1/structure
+a087bc4 HEAD@{28}: pull: Fast-forward
+fa699e6 HEAD@{29}: checkout: moving from evidences/evidence1/data to main
+c1e7841 HEAD@{30}: commit: Data files (LFS)
+fa699e6 HEAD@{31}: reset: moving to HEAD~1
+e8fc67b HEAD@{32}: commit: Data files (LFS)
+fa699e6 HEAD@{33}: checkout: moving from main to evidences/evidence1/data
+fa699e6 HEAD@{34}: pull: Fast-forward
+bee4d80 HEAD@{35}: checkout: moving from evidences/evidence1/DATE-SEC-DED to main
+1709af7 HEAD@{36}: commit: Separator comments
+21b0c23 HEAD@{37}: commit: Typedef struct substitution
+93bf13e HEAD@{38}: commit: Preprocessor helper 'functions'
+d4483db HEAD@{39}: commit: Added Date-time instances
+4eb8b1a HEAD@{40}: commit: Parity Matrix generator
+58ab1ee HEAD@{41}: commit: Date SEC-DED & helper function optimization in IP SEC-DED
+bee4d80 HEAD@{42}: checkout: moving from main to evidences/evidence1/DATE-SEC-DED
+bee4d80 HEAD@{43}: pull: Fast-forward
+42114f8 HEAD@{44}: checkout: moving from evidences/evidence1/IP-SEC-DED to main
+0001d30 HEAD@{45}: commit: SEC-DED IP implementation
+42114f8 HEAD@{46}: checkout: moving from main to evidences/evidence1/IP-SEC-DED
+42114f8 HEAD@{47}: checkout: moving from activity/linked-list to main
