@@ -27,7 +27,8 @@
     +ip.a << "." << +ip.b << "." << +ip.c << "." << +ip.d
 
 #define printDayTime(dt) \
-    +dt.year << "-" << +dt.month << "-" << +dt.day << " " << +dt.hour << ":" << +dt.minute << ":" << +dt.second
+    std::format("{:04}-{:02}-{:02} {:02}:{:02}:{:02}", \
+        +dt.year, +dt.month, +dt.day, +dt.hour, +dt.minute, +dt.second)
 
 typedef enum { ERROR_NONE, ERROR_CORRECTED_DATA, ERROR_CORRECTED_PARITY, ERROR_DOUBLE } Status;
 
@@ -77,7 +78,7 @@ static inline uint32_t ipToInt(IPAddress ip) {
            ((uint32_t)ip.c << 8)  | (uint32_t)ip.d;
 }
 
-static inline IPAddress intToIp(uint32_t ip_int) {
+static inline IPAddress u32TpIP(uint32_t ip_int) {
     IPAddress ip;
     ip.a = (ip_int >> 24) & 0xFF;
     ip.b = (ip_int >> 16) & 0xFF;
@@ -96,11 +97,11 @@ static inline uint8_t computeIPParity(IPAddress ip) {
 }
 
 // --- SEC-DED version of IPV4 ---
-void intToIpSEC_DED(IPAddressSEC_DED *packet) {
+inline void u32TpIPSEC_DED(IPAddressSEC_DED *packet) {
     packet->sec_ded = computeIPParity(packet->ip);
 }
 
-Status verifyAndCorrect(IPAddressSEC_DED *packet) {
+inline Status verifyAndCorrect(IPAddressSEC_DED *packet) {
     uint8_t calculated_parity = computeIPParity(packet->ip);
     uint8_t syndrome = (calculated_parity ^ packet->sec_ded) & 0x7F;
 
@@ -112,7 +113,7 @@ Status verifyAndCorrect(IPAddressSEC_DED *packet) {
         for (int i = 0; i < 32; i++) {
             if (syndrome == IPV4_P_MATRIX[i]) {
                 uint32_t val = ipToInt(packet->ip) ^ (1U << i);
-                packet->ip = intToIp(val);
+                packet->ip = u32TpIP(val);
                 return ERROR_CORRECTED_DATA;
             }
         }
@@ -170,9 +171,15 @@ static inline void u64ToDayTime(uint64_t val, DayTime *dt) {
     dt->second =  val        & 0xFF;
 }
 
+static inline DayTime u64ToDayTime(uint64_t val) {
+    DayTime dt;
+    u64ToDayTime(val, &dt);
+    return dt;
+}
+
 // --- SEC-DED Implementation ---
 // Computes parity byte using XOR over active bit positions in DATE_P_MATRIX
-uint8_t computeDayTimeParity(const DayTime *dt) {
+inline uint8_t computeDayTimeParity(const DayTime *dt) {
     uint64_t data = daytimeToU64(dt);
     uint8_t parity = 0;
     for (int i = 0; i < 56; i++) {
@@ -184,11 +191,11 @@ uint8_t computeDayTimeParity(const DayTime *dt) {
 }
 
 // Calculates parity and assigns it to dt->sec_ded
-void encodeDayTime(DayTime *dt) {
+inline void encodeDayTime(DayTime *dt) {
     dt->sec_ded = computeDayTimeParity(dt);
 }
 
-Status verifyAndCorrectDayTime(DayTime *dt) {
+inline Status verifyAndCorrectDayTime(DayTime *dt) {
     uint8_t calculated_parity = computeDayTimeParity(dt);
     uint8_t syndrome = calculated_parity ^ dt->sec_ded;
 
@@ -215,42 +222,4 @@ Status verifyAndCorrectDayTime(DayTime *dt) {
     }
 
     return ERROR_DOUBLE;
-}
-
-// --- User Date Conversion Logic ---
-// Returns standard cumulative days since March 1st for a given month index (offset by 3)
-static inline int daysSinceMarch(int month) {
-    return (month * 367) / 12;
-}
-
-uint64_t dateToInt(const DayTime dt) {
-    uint_least16_t y = dt.year;
-    uint_least8_t m = dt.month;
-
-    // Shift calendar so March is month 0, and Jan/Feb belong to the previous year
-    if (m <= 2) {
-        m += 12;
-        y -= 1;
-    }
-
-    uint_least32_t totalDays = (365 * y) + (y / 4) - (y / 100) + (y / 400) + daysSinceMarch(m) + dt.day - 306;
-
-    constexpr uint_least64_t DAYS_AT_EPOCH_2000 = 730485; 
-    uint_least32_t daysSince2000 = totalDays - DAYS_AT_EPOCH_2000;
-    uint_least64_t totalSeconds = (daysSince2000 * 86400) + 
-                                (dt.hour * 3600) + 
-                                (dt.minute * 60) + 
-                                dt.second;
-
-    return totalSeconds;
-}
-
-// Safely converts struct to total seconds, repairing bit flips prior to conversion
-bool safeDateToInt(const DayTime *dt, uint64_t *out_seconds) {
-    Status status = verifyAndCorrectDayTime((DayTime *)dt);
-    if (status == ERROR_DOUBLE) {
-        return false; // Fatal double-bit corruption
-    }
-    *out_seconds = dateToInt(*dt);
-    return true;
 }

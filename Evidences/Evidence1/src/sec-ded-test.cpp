@@ -1,5 +1,11 @@
-#include "lib/hashFunctions.h"
+#include "hashFunctions.h"
 #include <iostream>
+#include <format>
+
+auto flipBit = [](auto& obj, std::size_t bit_index) {
+    auto* bytes = reinterpret_cast<uint8_t*>(&obj);
+    bytes[bit_index / 8] ^= (1U << (bit_index % 8));
+};
 
 int main() {
     // --------------
@@ -9,14 +15,13 @@ int main() {
     std::cout << "IP Address: " << printIPAddress(ip) << std::endl;
     uint32_t ip_int = ipToInt(ip);
     std::cout << "Integer representation: " << ip_int << std::endl;
-    IPAddress ip2 = intToIp(ip_int);
+    IPAddress ip2 = u32TpIP(ip_int);
     std::cout << "Converted back: " << printIPAddress(ip2) << std::endl;
     std::cout << std::endl;
 
-    IPAddressSEC_DED packet; packet.ip = ip; intToIpSEC_DED(&packet);
+    IPAddressSEC_DED packet; packet.ip = ip; u32TpIPSEC_DED(&packet);
     std::cout << "SEC-DED Parity: " << +packet.sec_ded << std::endl;
-    packet.ip.c ^= 0x02; // Flip the least significant bit of the third octet to simulate a single-bit error
-    // packet.sec_ded ^= 0x01; // Flip the least significant bit of the parity to simulate a parity error
+    flipBit(packet, 5); // Simulate a single-bit error
     std::cout << "Corrupted IP Address: " << printIPAddress(packet.ip) << std::endl;
     std::cout << "Corrupted SEC-DED Parity: " << +packet.sec_ded << std::endl;
 
@@ -29,18 +34,24 @@ int main() {
     // Test DayTime
     // --------------
     DayTime dt = {2024, 2, 29, 14, 30, 45};
+    uint64_t dt_int = daytimeToU64(&dt);
     std::cout << "DayTime: " << printDayTime(dt) << std::endl;
+    std::cout << "Integer representation: " << dt_int << std::endl;
     encodeDayTime(&dt);
     std::cout << "SEC-DED Parity: " << +dt.sec_ded << std::endl;
 
     // Simulate a single-bit error
-    dt.month ^= 0x01;
+    flipBit(dt, 8);
     std::cout << "Corrupted DayTime: " << printDayTime(dt) << std::endl;
+    // std::cout << "Corrupted Integer representation: " << std::format("{:b}", daytimeToU64(&dt)) << std::endl;
+    std::cout << "Corrupted Integer representation: " << daytimeToU64(&dt) << std::endl;
     std::cout << "Corrupted SEC-DED Parity: " << +dt.sec_ded << std::endl;
 
     Status status2 = verifyAndCorrectDayTime(&dt);
     std::cout << "Verification Status: " << prettyPrintStatus(status2) << std::endl;
-    std::cout << "Corrected DayTime: " << printDayTime(dt) << std::endl;
+    // std::cout << "Corrected Integer representation: " << std::format("{:b}", daytimeToU64(&dt)) << std::endl;
+    std::cout << "Corrected Integer representation: " << daytimeToU64(&dt) << std::endl;
+    std::cout << "Back to Daytime: " << printDayTime(u64ToDayTime(dt_int)) << std::endl;
     std::cout<<std::endl;
 
     return 0;
