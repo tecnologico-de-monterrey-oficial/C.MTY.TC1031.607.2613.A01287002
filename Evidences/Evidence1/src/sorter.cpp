@@ -111,10 +111,10 @@ int main() {
             }
             std::cout << std::endl;
 
-            if (sortChoice < 1 || sortChoice > 4) {
+            if (sortChoice < 1 || sortChoice > 8) {
                 std::cerr << "Invalid option. Try again...\n\n";
             }
-        } while (sortChoice < 1 || sortChoice > 4);
+        } while (sortChoice < 1 || sortChoice > 8);
 
         // Pack parallel vectors into a single sortable vector
         std::vector<LogEntry> entries(numericIPAddresses.size());
