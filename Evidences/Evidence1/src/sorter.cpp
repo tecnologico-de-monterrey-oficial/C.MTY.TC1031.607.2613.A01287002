@@ -265,10 +265,24 @@ int main() {
                           << "   Response: " << responses[i]
                           << std::endl;
             }
+            std::cout << std::endl;
+
+            std::cout << "Saved search results to out/range607.txt" << std::endl;
+            std::ofstream outFile("out/range607.txt");
+            if (outFile.is_open()) {
+                outFile << "Search results for: " << dateTimeInput << std::endl;
+                outFile << std::endl;
+                for (int i = left; i <= right; ++i) {
+                    outFile << "   IP: " << printIPAddress(u32TpIP(ips[i]))
+                            << "   DayTime: " << printDayTime(u64ToDayTime(daytimes[i]))
+                            << "   Response: " << responses[i]
+                            << std::endl;
+                }
+                outFile.close();
+            }
         }
 
-        break;
-    
+        break;    
     }}
         
     return 0;
