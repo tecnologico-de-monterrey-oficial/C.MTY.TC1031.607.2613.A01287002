@@ -179,3 +179,55 @@ void Algorithm::introSort(std::vector<T> &data, int left, int right, int depthLi
     Algorithm::introSort(data, left, pivot - 1, depthLimit - 1);
     Algorithm::introSort(data, pivot + 1, right, depthLimit - 1);
 }
+
+// -- the other ones that nobody cares cause O(n^2) --
+
+template <typename T>
+void Algorithm::swapSort(std::vector<T>& arr) {
+    for (size_t p1 = 0; p1 < arr.size(); p1++) {
+        for (size_t p2 = p1 + 1; p2 < arr.size(); p2++) {
+            if (arr[p1] > arr[p2]) {
+                std::swap(arr[p1], arr[p2]);
+            }
+        }
+    }
+}
+
+template <typename T>
+void Algorithm::bubbleSort(std::vector<T>& arr) {
+    size_t p1 = 0;
+    while (p1 + 1 < arr.size()) {
+        if (arr[p1] > arr[p1 + 1]) {
+            std::swap(arr[p1], arr[p1 + 1]);
+            p1 = 0;
+        } else {
+            p1++;
+        }
+    }
+}
+
+template <typename T>
+void Algorithm::selectionSort(std::vector<T>& arr) {
+    for(size_t i = 0; i < arr.size(); i++) {
+        size_t minIdx = i;
+        for(size_t j=i; j<arr.size(); j++) {
+            if(arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        std::swap(arr[i], arr[minIdx]);
+    }
+}
+
+template <typename T>
+void Algorithm::insertionSort(std::vector<T>& arr) {
+    for(size_t i=1; i < arr.size(); i++) {
+        T key = arr[i];
+        size_t j = i;
+        while (j > 0 && arr[j - 1] > key) {
+            arr[j] = arr[j - 1];
+            j--;
+        }
+        arr[j] = key;
+    }
+}
