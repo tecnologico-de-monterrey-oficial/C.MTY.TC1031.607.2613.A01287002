@@ -4,8 +4,8 @@ project(ActividadSearchAlgorithms)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Include source root so `#include "lib/..."` paths resolve properly
-include_directories(${CMAKE_SOURCE_DIR})
+# Include source root so `#include "include/..."` paths resolve properly
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Set global runtime output directory for all build configurations
 set(RELEASE_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/__release__")
@@ -26,7 +26,7 @@ foreach(SOURCE_FILE IN LISTS SRC_FILES)
     get_filename_component(TARGET_NAME "${SOURCE_FILE}" NAME_WE)
     
     # Pass target name and source path as distinct, quoted arguments
-    add_executable("${TARGET_NAME}" "${SOURCE_FILE}" "${CMAKE_SOURCE_DIR}/lib/processing.cpp")
+    add_executable("${TARGET_NAME}" "${SOURCE_FILE}" "${CMAKE_SOURCE_DIR}/include/processing.cpp")
     
     list(APPEND ALL_TARGET_NAMES "${TARGET_NAME}")
 endforeach()

@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 #include <bit> 
-#include "lib/hashFunctions.h"
+#include "hashFunctions.h"
 
 class Parser {
 private:

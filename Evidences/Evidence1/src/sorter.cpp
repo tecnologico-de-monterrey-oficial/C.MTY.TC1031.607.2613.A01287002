@@ -3,8 +3,8 @@
 #include <thread>
 #include <vector>
 #include <set>
-#include "lib/hashFunctions.h"
-#include "lib/processing.h"
+#include "hashFunctions.h"
+#include "processing.h"
 
 struct LogEntry {
     uint32_t ip;

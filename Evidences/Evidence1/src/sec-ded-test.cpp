@@ -1,4 +1,4 @@
-#include "lib/hashFunctions.h"
+#include "hashFunctions.h"
 #include <iostream>
 #include <format>
 
