@@ -1,10 +1,14 @@
 #include "processing.h"
+#include <sstream>
+#include <map>
+#include <format>
 
 //
 // -- Parser class implementation --
 //
 Parser::Parser(const std::string &filename) {
-    if (!findFile(filename)) {
+    file.open(filename);
+    if (!file.is_open()) {
         throw std::runtime_error("File not found: " + filename);
     }
 }
@@ -20,9 +24,13 @@ bool Parser::findFile(const std::string &filename) {
     return testFile.good();
 }
 
-template <typename Callback>
-void Parser::readFileInChunks(const std::string &filename, size_t chunkSize, Callback processChunk) {
-    std::ifstream file(filename, std::ios::binary);
+void Parser::readFileInChunks(size_t chunkSize, std::function<void(const char*, size_t)> processChunk) {
+    if (!file.is_open()) {
+        throw std::runtime_error("File is not open for reading.");
+    }
+
+    file.clear();
+    file.seekg(0);
 
     std::vector<char> buffer(chunkSize);
     while (file.read(buffer.data(), buffer.size()) || file.gcount() > 0) {
@@ -30,9 +38,26 @@ void Parser::readFileInChunks(const std::string &filename, size_t chunkSize, Cal
     }
 }
 
+// Saves files using readable representations of IP addresses and DayTimes, along with their corresponding responses.
+void Parser::saveFile(const std::string &filename, const std::vector<uint32_t> &numericIPAddresses, const std::vector<uint64_t> &numericDayTimes, const std::vector<std::string> &responses) {
+    std::ofstream outFile(filename);
+    if (!outFile) {
+        throw std::runtime_error("Could not open file for writing: " + filename);
+    }
+
+    for (size_t i = 0; i < numericIPAddresses.size(); ++i) {
+        IPAddress ip = u32TpIP(numericIPAddresses[i]);
+        DayTime dt = u64ToDayTime(numericDayTimes[i]);
+        outFile << +ip.a << "." << +ip.b << "." << +ip.c << "." << +ip.d << " "
+                << std::format("{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
+                    +dt.year, +dt.month, +dt.day, +dt.hour, +dt.minute, +dt.second) << " "
+                << responses[i] << "\n";
+    }
+}
+
 std::vector<uint32_t> Parser::readNumericIPAddresses(const std::string &filename, size_t chunkSize) {
     std::vector<uint32_t> ipAddresses;
-    readFileInChunks(filename, chunkSize, [&ipAddresses](const char* data, size_t count) {
+    readFileInChunks(chunkSize, [&ipAddresses](const char* data, size_t count) {
         for (size_t i = 0; i < count; i += sizeof(uint32_t)) {
             uint32_t ip = *reinterpret_cast<const uint32_t*>(data + i);
             ipAddresses.push_back(ip);
@@ -43,7 +68,7 @@ std::vector<uint32_t> Parser::readNumericIPAddresses(const std::string &filename
 
 std::vector<uint64_t> Parser::readNumericDayTimes(const std::string &filename, size_t chunkSize) {
     std::vector<uint64_t> dayTimes;
-    readFileInChunks(filename, chunkSize, [&dayTimes](const char* data, size_t count) {
+    readFileInChunks(chunkSize, [&dayTimes](const char* data, size_t count) {
         for (size_t i = 0; i < count; i += sizeof(uint64_t)) {
             uint64_t dt = *reinterpret_cast<const uint64_t*>(data + i);
             dayTimes.push_back(dt);
@@ -52,106 +77,115 @@ std::vector<uint64_t> Parser::readNumericDayTimes(const std::string &filename, s
     return dayTimes;
 }
 
-//
-// -- Algorithm class implementation --
-//
-template <typename T>
-int Algorithm::binarySearch(const std::vector<T>& arr, T val, int p1=0, int p2= -1) {
-    if (p2 == -1) {p2 = arr.size() - 1;}
-    if (p1 > p2) {return -1;}
-    
-    int mid = p1+ (p2-p1)/2;
+DayTime Parser::parseLogLine(const std::string &line) {
+    static const std::map<std::string, uint_least8_t> monthMap = {
+        {"Jan", 1}, {"Feb", 2}, {"Mar", 3}, {"Apr", 4},
+        {"May", 5}, {"Jun", 6}, {"Jul", 7}, {"Aug", 8},
+        {"Sep", 9}, {"Oct", 10}, {"Nov", 11}, {"Dec", 12}
+    };
 
-    if(arr.at(mid) == val) {return mid;} 
-    else if(arr.at(mid) < val) {return Algorithm::binarySearch(arr, val, mid+1, p2);} 
-    else {return Algorithm::binarySearch(arr, val, p1, mid-1);}
+    DayTime dt = {};
+    std::istringstream iss(line);
+    std::string monthStr, dayStr, yearStr, timeStr;
+
+    iss >> monthStr >> dayStr >> yearStr >> timeStr;
+
+    dt.month = monthMap.at(monthStr);
+    dt.day = std::stoi(dayStr);
+    dt.year = std::stoi(yearStr);
+
+    std::replace(timeStr.begin(), timeStr.end(), ':', ' ');
+    std::istringstream timeIss(timeStr);
+    int h, m, s;
+    timeIss >> h >> m >> s;
+    dt.hour = h;
+    dt.minute = m;
+    dt.second = s;
+
+    return dt;
 }
 
-
-int Algorithm::partition(std::vector<int>& arr, int low, int high) {
-    int pivot = arr[high];
-    int i = low - 1;
-
-    for (int j = low; j < high; j++) {
-        if (arr[j] < pivot) {
-            i++;
-            std::swap(arr[i], arr[j]);
-        }
-    }
-    std::swap(arr[i + 1], arr[high]);
-    return i + 1;
+uint32_t Parser::parseLogIP(const std::string &line) {
+    std::istringstream iss(line);
+    std::string token;
+    // skip: MMM DD YYYY HH:MM:SS
+    for (int i = 0; i < 4; i++) iss >> token;
+    // read IP: a.b.c.d
+    std::string ipStr;
+    iss >> ipStr;
+    std::replace(ipStr.begin(), ipStr.end(), '.', ' ');
+    std::istringstream ipIss(ipStr);
+    int a, b, c, d;
+    ipIss >> a >> b >> c >> d;
+    IPAddress ip = {(uint_least8_t)a, (uint_least8_t)b, (uint_least8_t)c, (uint_least8_t)d};
+    return ipToInt(ip);
 }
 
-template <typename T>
-void Algorithm::quickSort(std::vector<T> &data, int left, int right) {
-    if (left < right) {
-        int pi = Algorithm::partition(data, left, right);
-        Algorithm::quickSort(data, left, pi - 1);
-        Algorithm::quickSort(data, pi + 1, right);
-    }
-}
-
-template <typename T>
-void Algorithm::heapify(std::vector<T> &data, int n, int i) {
-    int largest = i;
-    int l = 2 * i + 1;
-    int r = 2 * i + 2;
-
-    if (l < n && data[l] > data[largest]) {
-        largest = l;
+void Parser::readLogEntries(const std::string &filename, std::vector<uint32_t> &ips, std::vector<uint64_t> &daytimes, std::vector<std::string> &responses) {
+    std::ifstream inFile(filename);
+    if (!inFile) {
+        throw std::runtime_error("Could not open file: " + filename);
     }
 
-    if (r < n && data[r] > data[largest]) {
-        largest = r;
-    }
+    std::string line;
+    while (std::getline(inFile, line)) {
+        if (line.empty()) continue;
+        ips.push_back(parseLogIP(line));
+        DayTime dt = parseLogLine(line);
+        encodeDayTime(&dt);
+        daytimes.push_back(daytimeToU64(&dt));
 
-    if (largest != i) {
-        std::swap(data[i], data[largest]);
-        Algorithm::heapify(data, n, largest);
-    }
-}
-
-template <typename T>
-void Algorithm::heapSort(std::vector<T> &data) {
-    int n = data.size();
-
-    for (int i = n / 2 - 1; i >= 0; i--) {
-        Algorithm::heapify(data, n, i);
-    }
-
-    for (int i = n - 1; i > 0; i--) {
-        std::swap(data[0], data[i]);
-        Algorithm::heapify(data, i, 0);
+        // response is everything after the 4th token (MMM DD YYYY HH:MM:SS IP ...)
+        std::istringstream iss(line);
+        std::string token;
+        for (int i = 0; i < 5; i++) iss >> token;
+        std::string response;
+        std::getline(iss, response);
+        if (!response.empty() && response[0] == ' ') response.erase(0, 1);
+        responses.push_back(response);
     }
 }
 
-// -- intro sort --
-// depthLimit is typically set to 2 * floor(log(n)) where n is the number of elements in the array
-// Public entry point for full vector
-template <typename T>
-void Algorithm::introSort(std::vector<T> &data) {
-    if (data.size() <= 1) return;
-
-    int n = static_cast<int>(data.size());
-    int depthLimit = 2 * (std::bit_width(static_cast<unsigned int>(n)) - 1); // log_2(n) approximation
-
-    Algorithm::introSort(data, 0, n - 1, depthLimit);
-}
-
-// Recursive helper
-template <typename T>
-void Algorithm::introSort(std::vector<T> &data, int left, int right, int depthLimit) {
-    if (right - left <= 16) {
-        Algorithm::quickSort(data, left, right); // Note: Insertion sort is typically used here
-        return;
+void Parser::readOutputFile(const std::string &filename, std::vector<uint32_t> &ips, std::vector<uint64_t> &daytimes, std::vector<std::string> &responses) {
+    std::ifstream inFile(filename);
+    if (!inFile) {
+        throw std::runtime_error("Could not open output file: " + filename);
     }
 
-    if (depthLimit == 0) {
-        Algorithm::heapSort(data, left, right); // Passed bounds to heapify subrange
-        return;
-    }
+    std::string line;
+    while (std::getline(inFile, line)) {
+        if (line.empty()) continue;
 
-    int pivot = Algorithm::partition(data, left, right);
-    Algorithm::introSort(data, left, pivot - 1, depthLimit - 1);
-    Algorithm::introSort(data, pivot + 1, right, depthLimit - 1);
+        // Parse: a.b.c.d YYYY-MM-DD HH:MM:SS response
+        std::istringstream iss(line);
+        std::string ipStr, dateStr, timeStr;
+        iss >> ipStr >> dateStr >> timeStr;
+
+        // Parse IP: a.b.c.d
+        std::replace(ipStr.begin(), ipStr.end(), '.', ' ');
+        std::istringstream ipIss(ipStr);
+        int a, b, c, d;
+        ipIss >> a >> b >> c >> d;
+        IPAddress ip = {(uint_least8_t)a, (uint_least8_t)b, (uint_least8_t)c, (uint_least8_t)d};
+        ips.push_back(ipToInt(ip));
+
+        // Parse DayTime: YYYY-MM-DD HH:MM:SS
+        DayTime dt = {};
+        dt.year   = std::stoi(dateStr.substr(0, 4));
+        dt.month  = std::stoi(dateStr.substr(5, 2));
+        dt.day    = std::stoi(dateStr.substr(8, 2));
+        std::string combined = dateStr + " " + timeStr;
+        dt.hour   = std::stoi(combined.substr(11, 2));
+        dt.minute = std::stoi(combined.substr(14, 2));
+        dt.second = std::stoi(combined.substr(17, 2));
+        encodeDayTime(&dt);
+        daytimes.push_back(daytimeToU64(&dt));
+
+        // Response is everything after the datetime
+        std::string response;
+        std::getline(iss, response);
+        if (!response.empty() && response[0] == ' ') response.erase(0, 1);
+        responses.push_back(response);
+    }
 }
+
