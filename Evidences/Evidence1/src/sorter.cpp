@@ -25,10 +25,14 @@ int main() {
         std::cout << "  2. Search entries in log files" << std::endl;
         std::cout << "Enter the corresponding number (1 or 2): ";
 
-        if (!(std::cin >> mainChoice)) {
-            std::cin.clear();
-            std::cin.ignore(10000, '\n');
-            mainChoice = 0;
+        std::string mainInput;
+        std::getline(std::cin, mainInput);
+        if (!mainInput.empty()) {
+            try {
+                mainChoice = std::stoi(mainInput);
+            } catch (...) {
+                mainChoice = 0;
+            }
         }
         std::cout << std::endl;
 
@@ -49,10 +53,14 @@ int main() {
             std::cout << "  2. log607-2.txt" << std::endl;
             std::cout << "Enter the corresponding number (1 or 2): ";
 
-            if (!(std::cin >> choice)) {
-                std::cin.clear();
-                std::cin.ignore(10000, '\n');
-                choice = 0;
+            std::string choiceInput;
+            std::getline(std::cin, choiceInput);
+            if (!choiceInput.empty()) {
+                try {
+                    choice = std::stoi(choiceInput);
+                } catch (...) {
+                    choice = 0;
+                }
             }
             std::cout << std::endl;
 
@@ -88,7 +96,15 @@ int main() {
             std::cout << "  3. Merge Sort" << std::endl;
             std::cout << "  4. Intro Sort" << std::endl;
             std::cout << "Enter the corresponding number (1, 2, 3, or 4): ";
-            std::cin >> sortChoice;
+            std::string sortInput;
+            std::getline(std::cin, sortInput);
+            if (!sortInput.empty()) {
+                try {
+                    sortChoice = std::stoi(sortInput);
+                } catch (...) {
+                    sortChoice = 0;
+                }
+            }
             std::cout << std::endl;
 
             if (sortChoice < 1 || sortChoice > 4) {
@@ -215,13 +231,21 @@ int main() {
 
         // Choose date and time
         std::string dateTimeInput;
+        bool isValid = false;
         do {
             std::cout << "Enter the date and time to search (format: YYYY-MM-DD HH:MM:SS): ";
-            std::cin.ignore();
             std::getline(std::cin, dateTimeInput);
-            std::cout << "Date and time entered: " << dateTimeInput << std::endl;
-        } while (dateTimeInput.length() != 19 || dateTimeInput[4] != '-' || dateTimeInput[7] != '-' || dateTimeInput[10] != ' ' || dateTimeInput[13] != ':' || dateTimeInput[16] != ':');
-
+            isValid = (dateTimeInput.length() == 19 &&
+                    dateTimeInput[4] == '-' && dateTimeInput[7] == '-' &&
+                    dateTimeInput[10] == ' ' && dateTimeInput[13] == ':' && 
+                    dateTimeInput[16] == ':');
+            if (!isValid) {
+                std::cerr << "Invalid format. Please use YYYY-MM-DD HH:MM:SS.\n";
+            } else {
+                std::cout << "Date and time entered: " << dateTimeInput << std::endl;
+            }
+        } while (!isValid);
+        
         // Parse user input to DayTime and then to uint64_t
         DayTime searchDT = {};
         searchDT.year   = std::stoi(dateTimeInput.substr(0, 4));
