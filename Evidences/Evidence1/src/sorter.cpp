@@ -95,7 +95,11 @@ int main() {
             std::cout << "  2. Heap Sort" << std::endl;
             std::cout << "  3. Merge Sort" << std::endl;
             std::cout << "  4. Intro Sort" << std::endl;
-            std::cout << "Enter the corresponding number (1, 2, 3, or 4): ";
+            std::cout << "  5. Swap Sort" << std::endl;
+            std::cout << "  6. Bubble Sort" << std::endl;
+            std::cout << "  7. Selection Sort" << std::endl;
+            std::cout << "  8. Insertion Sort" << std::endl;
+            std::cout << "Enter the corresponding number (1 to 8): ";
             std::string sortInput;
             std::getline(std::cin, sortInput);
             if (!sortInput.empty()) {
