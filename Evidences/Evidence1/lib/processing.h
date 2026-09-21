@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <functional>
 #include <vector>
 #include <memory>
 #include <bit> 
@@ -16,13 +17,22 @@ public:
     ~Parser();
 
     bool findFile(const std::string &filename);
+    void readFileInChunks(size_t chunkSize, std::function<void(const char*, size_t)> processChunk);
 
-    // Motivation is for large files, avoids a memory spike
-    template <typename Callback>
-    void readFileInChunks(const std::string &filename, size_t chunkSize, Callback processChunk);
+    template <typename T>
+    std::vector<T> readLines(const std::string &filename, size_t chunkSize, std::function<T(const std::string&)> parseLine);
     
+    void saveFile(const std::string &filename, const std::vector<uint32_t> &numericIPAddresses, const std::vector<uint64_t> &numericDayTimes, const std::vector<std::string> &responses);
+    std::vector<std::string> readResponses(const std::string &filename, size_t chunkSize);
+
     std::vector<uint32_t> readNumericIPAddresses(const std::string &filename, size_t chunkSize);
     std::vector<uint64_t> readNumericDayTimes(const std::string &filename, size_t chunkSize);
+
+    DayTime parseLogLine(const std::string &line);
+    uint32_t parseLogIP(const std::string &line);
+    void readLogEntries(const std::string &filename, std::vector<uint32_t> &ips, std::vector<uint64_t> &daytimes, std::vector<std::string> &responses);
+
+    void readOutputFile(const std::string &filename, std::vector<uint32_t> &ips, std::vector<uint64_t> &daytimes, std::vector<std::string> &responses);
 };
 
 class Algorithm {
@@ -35,7 +45,8 @@ public:
     int binarySearch(const std::vector<T>& arr, T val, int p1=0, int p2= -1);
     
     // -- quick sort --
-    int partition(std::vector<int>& arr, int low, int high);
+    template <typename T>
+    int partition(std::vector<T>& arr, int low, int high);
     template <typename T>
     void quickSort(std::vector<T> &data, int left, int right);
 
@@ -46,6 +57,13 @@ public:
     template <typename T>
     void heapSort(std::vector<T> &data);
 
+    // -- Merge sort --
+    template <typename T>
+    void mergeHelper(std::vector<T> &data, int left, int mid, int right);
+
+    template <typename T>
+    void mergeSort(std::vector<T> &data, int left, int right);
+
     // -- intro sort --
     template <typename T>
     void introSort(std::vector<T> &data);
@@ -53,3 +71,5 @@ public:
     template <typename T>
     void introSort(std::vector<T> &data, int left, int right, int depthLimit);
 };
+
+#include "processing.tpp"
