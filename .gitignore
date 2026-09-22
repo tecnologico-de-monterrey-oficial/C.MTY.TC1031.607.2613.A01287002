@@ -2,3 +2,5 @@ __pycache__/
 build/
 __release__/
 .vscode/
+evidences/evidence1/out/*
+!evidences/evidence1/out/.gitkeep
