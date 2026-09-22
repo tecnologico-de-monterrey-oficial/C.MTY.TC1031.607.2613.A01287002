@@ -1,20 +1,28 @@
 #include <iostream>
 #include "helper.h"
 #include <memory>
+#include "linkedlist.h"
 
 int main() {
-    int x = 42;
-    int* ptr = &x;
+    // int x = 42;
+    // int* ptr = &x;
 
-    std::cout << "Value of x: " << x << std::endl;
-    std::cout << "Address of x: " << ptr << std::endl;
+    // std::cout << "Value of x: " << x << std::endl;
+    // std::cout << "Address of x: " << ptr << std::endl;
 
-    int* q = new int(4);
-    std::cout << "Value of q: " << q << std::endl;
-    std::cout << "Value of q: " << *q << std::endl;
-    delete q;
-    std::cout << "Value of q: " << q << std::endl;
-    std::cout << "Value of q: " << *q << std::endl;
+    // int* q = new int(4);
+    // std::cout << "Value of q: " << q << std::endl;
+    // std::cout << "Value of q: " << *q << std::endl;
+    // delete q;
+    // std::cout << "Value of q: " << q << std::endl;
+    // std::cout << "Value of q: " << *q << std::endl;
+    
+    LinkedList<int> list;
+    list.append(1);
+    list.append(2);
+    list.append(3);
+    list.prepend(0);
+    list.print();
 
     std::unique_ptr<Fraction> f = std::make_unique<Fraction>(3, 4);
     f->print();
