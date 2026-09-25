@@ -21,7 +21,10 @@ int main() {
     list.append(1);
     list.append(2);
     list.append(3);
+    list.insertAt(1, 42);
     list.prepend(0);
+    list.print();
+    list.removeAt(2);
     list.print();
 
     std::unique_ptr<Fraction> f = std::make_unique<Fraction>(3, 4);
