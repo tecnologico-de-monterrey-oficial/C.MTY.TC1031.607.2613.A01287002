@@ -2,6 +2,7 @@
 #include "helper.h"
 #include <memory>
 #include "linkedlist.h"
+#include "queue.h"
 
 int main() {
     // int x = 42;
@@ -16,7 +17,6 @@ int main() {
     // delete q;
     // std::cout << "Value of q: " << q << std::endl;
     // std::cout << "Value of q: " << *q << std::endl;
-    
     LinkedList<int> list;
     list.append(1);
     list.append(2);
