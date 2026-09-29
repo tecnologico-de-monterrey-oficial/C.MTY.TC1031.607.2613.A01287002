@@ -18,7 +18,7 @@ struct Stack {
         if (!list.head) {
             throw std::out_of_range("Stack esta vacio");
         }
-        list.head = std::move(list.head->next);
+        list.removeAt(0);
     }
 
     const T& top() const {
