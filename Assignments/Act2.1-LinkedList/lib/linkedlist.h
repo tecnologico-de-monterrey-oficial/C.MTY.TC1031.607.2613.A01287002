@@ -18,8 +18,101 @@ template <typename T>
 struct LinkedList {
     std::unique_ptr<Node<T>> head;
 
+    LinkedList() = default;
+
+    // Constructor de copia: duplica la lista (copia profunda)
+    LinkedList(const LinkedList& other) {
+        if (!other.head) {
+            return;
+        }
+        head = std::make_unique<Node<T>>(other.head->data);
+        Node<T>* src = other.head->next.get();
+        Node<T>* dst = head.get();
+        while (src != nullptr) {
+            dst->next = std::make_unique<Node<T>>(src->data);
+            dst = dst->next.get();
+            src = src->next.get();
+        }
+    }
+
+    // Constructor de movimiento
+    LinkedList(LinkedList&& other) noexcept = default;
+
+    // Asignacion de movimiento
+    LinkedList& operator=(LinkedList&& other) noexcept = default;
+
+    // Operador de asignacion (=): copia profunda, duplica la lista
+    LinkedList& operator=(const LinkedList& other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        clear();
+
+        if (!other.head) {
+            return *this;
+        }
+
+        head = std::make_unique<Node<T>>(other.head->data);
+        Node<T>* src = other.head->next.get();
+        Node<T>* dst = head.get();
+        while (src != nullptr) {
+            dst->next = std::make_unique<Node<T>>(src->data);
+            dst = dst->next.get();
+            src = src->next.get();
+        }
+
+        return *this;
+    }
+
+    // Operador [] : obtener el elemento de una posicion dada
+    // (la version no-const tambien sirve para actualizar: lista[i] = valor)
+    T& operator[](size_t index) {
+        Node<T>* current = head.get();
+        size_t i = 0;
+
+        while (current != nullptr && i < index) {
+            current = current->next.get();
+            i++;
+        }
+
+        if (current == nullptr) {
+            throw std::out_of_range("Indice fuera de rango");
+        }
+
+        return current->data;
+    }
+
+    const T& operator[](size_t index) const {
+        Node<T>* current = head.get();
+        size_t i = 0;
+
+        while (current != nullptr && i < index) {
+            current = current->next.get();
+            i++;
+        }
+
+        if (current == nullptr) {
+            throw std::out_of_range("Indice fuera de rango");
+        }
+
+        return current->data;
+    }
+
     ~LinkedList() {
         clear();
+    }
+
+    size_t size() const {
+        size_t count = 0;
+        for (Node<T>* current = head.get(); current != nullptr; current = current->next.get()) {
+            count++;
+        }
+        return count;
+    }
+
+    bool empty() const {
+        return head == nullptr;
     }
 
     void clear() {
@@ -211,4 +304,5 @@ struct LinkedList {
         }
         std::cout << "]" << std::endl;
     }
+
 };
