@@ -19,34 +19,82 @@ public:
 };
 
 int main() {
-    Stack<PaginaWeb> stack;
-    stack.push(PaginaWeb("Un gran video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
-    std::cout << "¡Videos!" << std::endl;
-    std::string titulo, link;
+    Stack<PaginaWeb> historial;
+    int opcion = 0;
 
-    while (true) {
-        std::cout << "Ingrese el titulo del video (o 'salir' para terminar): ";
-        std::getline(std::cin, titulo);
-        if (titulo == "salir") {
-            break;
+    while (opcion != 5) {
+        std::cout << "\n===== Navegador web =====" << std::endl;
+        std::cout << "1. Visitar una nueva pagina" << std::endl;
+        std::cout << "2. Retroceder a la pagina anterior" << std::endl;
+        std::cout << "3. Ver la pagina actual" << std::endl;
+        std::cout << "4. Mostrar cuantas paginas hay en el historial" << std::endl;
+        std::cout << "5. Salir" << std::endl;
+        std::cout << "Selecciona una opcion: ";
+
+        std::string entrada;
+        std::getline(std::cin, entrada);
+        try {
+            opcion = std::stoi(entrada);
+        } catch (...) {
+            opcion = 0;
         }
-        
-        std::cout << "Ingrese el link del video: ";
-        std::getline(std::cin, link);
-        
-        stack.push(PaginaWeb(titulo, link));
-        std::cout << "Video agregado: " << stack.top() << std::endl;
+
+        switch (opcion) {
+            case 1: {
+                std::string titulo, url;
+                std::cout << "Titulo de la pagina: ";
+                std::getline(std::cin, titulo);
+                std::cout << "URL de la pagina: ";
+                std::getline(std::cin, url);
+
+                historial.push(PaginaWeb(titulo, url));
+                std::cout << "Pagina agregada al historial: " << historial.top() << std::endl;
+                break;
+            }
+            case 2: {
+                if (historial.size() == 0) {
+                    std::cout << "El historial esta vacio, no hay paginas que cerrar." << std::endl;
+                    break;
+                }
+                PaginaWeb cerrada = historial.top();
+                historial.pop();
+                std::cout << "Se cerro la pagina: " << cerrada << std::endl;
+                std::cout << "Pagina actual: ";
+                if (historial.size() == 0) {
+                    std::cout << "(ninguna, el historial quedo vacio)" << std::endl;
+                } else {
+                    historial.top().print();
+                }
+                break;
+            }
+            case 3: {
+                if (historial.size() == 0) {
+                    std::cout << "No hay ninguna pagina abierta." << std::endl;
+                    break;
+                }
+                std::cout << "Pagina actual: " << std::endl;
+                historial.top().print();
+                break;
+            }
+            case 4: {
+                std::cout << "Paginas en el historial: " << historial.size() << std::endl;
+                if (historial.size() > 0) {
+                    std::cout << "Historial (de mas reciente a mas antigua): ";
+                    historial.print();
+                }
+                break;
+            }
+            case 5: {
+                std::cout << "Saliendo del navegador. Paginas en el historial: "
+                          << historial.size() << std::endl;
+                break;
+            }
+            default: {
+                std::cout << "Opcion no valida, intenta de nuevo." << std::endl;
+                break;
+            }
+        }
     }
-    std::cout << std::endl;
 
-    std::cout << "Retrocediendo a la página anterior:" << std::endl;
-    stack.pop();
-    stack.print();
-    std::cout << std::endl;
-
-    std::cout << "Video actual en la parte superior de la pila:" << std::endl;
-    stack.top().print();
-    std::cout << std::endl;
-
-    std::cout << "Número de videos en la pila: " << stack.size() << std::endl;
+    return 0;
 }
