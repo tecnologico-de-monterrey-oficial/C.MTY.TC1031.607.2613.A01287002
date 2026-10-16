@@ -250,3 +250,60 @@ struct Stack {
         std::cout << std::endl;
     }
 };
+
+template <typename T>
+struct Queue {
+    std::shared_ptr<Node<T>> head;
+    std::shared_ptr<Node<T>> tail;
+
+    void enqueue(T value) {
+        auto newNode = std::make_shared<Node<T>>(value);
+        if (!tail) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+
+    void dequeue() {
+        if (!head) {
+            throw std::runtime_error("Queue is empty");
+        }
+        head = head->next;
+        if (!head) {
+            tail.reset();
+        }
+    }
+
+    void peek() const {
+        if (!head) {
+            throw std::runtime_error("Queue is empty");
+        }
+        std::cout << head->data << std::endl;
+    }
+
+    bool isEmpty() const {
+        return head == nullptr;
+    }
+
+    size_t size() const {
+        size_t count = 0;
+        auto current = head;
+        while (current) {
+            count++;
+            current = current->next;
+        }
+        return count;
+    }
+
+    void print() const {
+        auto current = head;
+        while (current) {
+            std::cout << current->data << " ";
+            current = current->next;
+        }
+        std::cout << std::endl;
+    }
+};
