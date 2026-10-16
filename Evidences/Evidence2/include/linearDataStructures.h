@@ -195,3 +195,58 @@ struct DoubleLinkedList {
         return count;
     }
 };
+
+template <typename T>
+struct Pipe {
+    std::shared_ptr<Node<T>> head;
+
+    void push(T value) {
+        auto newNode = std::make_shared<Node<T>>(value);
+        if (!head) {
+            head = newNode;
+        } else {
+            auto current = head;
+            while (current->next) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+    }
+
+    void pop() {
+        if (!head) {
+            throw std::runtime_error("Pipe is empty");
+        }
+        head = head->next;
+    }
+
+    void peek() const {
+        if (!head) {
+            throw std::runtime_error("Pipe is empty");
+        }
+        std::cout << head->data << std::endl;
+    }
+
+    bool isEmpty() const {
+        return head == nullptr;
+    }
+
+    size_t size() const {
+        size_t count = 0;
+        auto current = head;
+        while (current) {
+            count++;
+            current = current->next;
+        }
+        return count;
+    }
+
+    void print() const {
+        auto current = head;
+        while (current) {
+            std::cout << current->data << " ";
+            current = current->next;
+        }
+        std::cout << std::endl;
+    }
+};
