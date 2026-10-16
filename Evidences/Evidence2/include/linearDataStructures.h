@@ -197,7 +197,7 @@ struct DoubleLinkedList {
 };
 
 template <typename T>
-struct Pipe {
+struct Stack {
     std::shared_ptr<Node<T>> head;
 
     void push(T value) {
@@ -215,14 +215,14 @@ struct Pipe {
 
     void pop() {
         if (!head) {
-            throw std::runtime_error("Pipe is empty");
+            throw std::runtime_error("Stack is empty");
         }
         head = head->next;
     }
 
     void peek() const {
         if (!head) {
-            throw std::runtime_error("Pipe is empty");
+            throw std::runtime_error("Stack is empty");
         }
         std::cout << head->data << std::endl;
     }
