@@ -6,7 +6,8 @@ cmake --build build --config Release
 
 ## Ejecución:
 ```bash
-./__release__/sorter.exe
+./__release__/evidences1-sorter.exe # Evidencia 1
+./__release__/evidences2-sortlinear.exe # Evidencia 2
 ```
 
 ## ¿Dónde encontraré los resultados?
@@ -19,4 +20,5 @@ out/range607.txt
 ```
 
 ## Video 
-https://youtu.be/SnY1bbvvrk8
+Evidencia 1: https://youtu.be/SnY1bbvvrk8 
+Evidencia 2: https://youtu.be/MnSjTV4Fkn4
