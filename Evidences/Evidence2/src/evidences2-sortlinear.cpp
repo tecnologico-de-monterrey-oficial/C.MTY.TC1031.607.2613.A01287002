@@ -7,6 +7,7 @@
 #include <format>
 #include <map>
 #include <string>
+#include <vector>
 #include "hashFunctions.h"
 #include "linearDataStructures.h"
 
@@ -226,7 +227,7 @@ int main() {
             if (alreadySorted) {
                 std::cout << "The list is already sorted by date and time, it will not be sorted again." << std::endl;
             } else {
-                const char *algorithm = "Merge Sort";
+                const char *algorithm = "Tim Sort";
                 const char *modelNames[3] = {"n", "n log n", "n^2"};
                 const int expected = 1;
                 std::cout << "Sorting with " << algorithm << " (expected ~" << modelNames[expected] << " comparisons)..." << std::endl;
@@ -234,27 +235,109 @@ int main() {
                 size_t comparisons = 0;
                 std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
-                LogNode dummy = std::make_shared<Node<LogEntry>>(LogEntry{});
-                dummy->next = std::move(logs.head);
+                size_t minRun = loaded;
+                size_t extraBit = 0;
+                while (minRun >= 64) {
+                    extraBit |= minRun & 1;
+                    minRun >>= 1;
+                }
+                minRun += extraBit;
+
+                std::vector<std::pair<LogNode, size_t>> runs;
+                LogNode current = std::move(logs.head);
                 logs.tail.reset();
 
-                for (size_t width = 1; width < loaded; width *= 2) {
-                    LogNode tail = dummy;
-                    LogNode current = dummy->next;
-                    while (current) {
-                        LogNode left = current;
-                        for (size_t i = 1; i < width && current->next; ++i) current = current->next;
-                        LogNode right = current->next;
-                        current->next.reset();
+                while (true) {
+                    if (current) {
+                        LogNode runHead = current;
+                        LogNode runTail = current;
+                        current = current->next;
+                        runHead->next.reset();
+                        runHead->prev.reset();
+                        size_t runLength = 1;
 
-                        current = right;
-                        if (current) {
-                            for (size_t i = 1; i < width && current->next; ++i) current = current->next;
-                            LogNode rest = current->next;
-                            current->next.reset();
-                            current = rest;
+                        int direction = 0;
+                        while (current) {
+                            bool ascending = false;
+                            bool descending = false;
+                            if (direction >= 0) {
+                                comparisons++;
+                                ascending = runTail->data <= current->data;
+                            }
+                            if (!ascending && direction == 0) {
+                                descending = true;
+                            } else if (!ascending && direction < 0) {
+                                comparisons++;
+                                descending = current->data < runHead->data;
+                            }
+                            if (!ascending && !descending) break;
+
+                            LogNode next = current->next;
+                            if (ascending) {
+                                direction = 1;
+                                runTail->next = current;
+                                current->prev = runTail;
+                                current->next.reset();
+                                runTail = current;
+                            } else {
+                                direction = -1;
+                                current->next = runHead;
+                                runHead->prev = current;
+                                current->prev.reset();
+                                runHead = current;
+                            }
+                            current = next;
+                            runLength++;
                         }
 
+                        while (current && runLength < minRun) {
+                            LogNode node = current;
+                            current = node->next;
+                            node->next.reset();
+
+                            LogNode position = runTail;
+                            while (position) {
+                                comparisons++;
+                                if (!(node->data < position->data)) break;
+                                position = position->prev.lock();
+                            }
+
+                            if (!position) {
+                                node->next = runHead;
+                                runHead->prev = node;
+                                node->prev.reset();
+                                runHead = node;
+                            } else {
+                                node->next = position->next;
+                                node->prev = position;
+                                if (position->next) {
+                                    position->next->prev = node;
+                                } else {
+                                    runTail = node;
+                                }
+                                position->next = node;
+                            }
+                            runLength++;
+                        }
+
+                        runs.push_back({runHead, runLength});
+                    }
+
+                    bool forceMerge = !current;
+                    while (runs.size() > 1) {
+                        size_t k = runs.size();
+                        size_t mergeAt = k - 2;
+                        if (k >= 3 && runs[k - 3].second < runs[k - 1].second) {
+                            mergeAt = k - 3;
+                        }
+                        bool keepsInvariant = runs[k - 2].second > runs[k - 1].second &&
+                            (k < 3 || runs[k - 3].second > runs[k - 2].second + runs[k - 1].second);
+                        if (!forceMerge && keepsInvariant) break;
+
+                        LogNode left = runs[mergeAt].first;
+                        LogNode right = runs[mergeAt + 1].first;
+                        LogNode dummy = std::make_shared<Node<LogEntry>>(LogEntry{});
+                        LogNode tail = dummy;
                         while (left && right) {
                             comparisons++;
                             if (left->data <= right->data) {
@@ -267,11 +350,16 @@ int main() {
                             tail = tail->next;
                         }
                         tail->next = left ? left : right;
-                        while (tail->next) tail = tail->next;
+
+                        runs[mergeAt] = {dummy->next, runs[mergeAt].second + runs[mergeAt + 1].second};
+                        runs.erase(runs.begin() + mergeAt + 1);
                     }
+
+                    if (!current) break;
                 }
 
-                logs.head = std::move(dummy->next);
+                if (!runs.empty()) logs.head = runs[0].first;
+                runs.clear();
                 LogNode prev;
                 for (LogNode current = logs.head; current; current = current->next) {
                     current->prev = prev;
