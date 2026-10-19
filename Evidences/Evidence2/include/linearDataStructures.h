@@ -202,15 +202,8 @@ struct Stack {
 
     void push(T value) {
         auto newNode = std::make_shared<Node<T>>(value);
-        if (!head) {
-            head = newNode;
-        } else {
-            auto current = head;
-            while (current->next) {
-                current = current->next;
-            }
-            current->next = newNode;
-        }
+        newNode->next = head;
+        head = newNode;
     }
 
     void pop() {
