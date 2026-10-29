@@ -230,4 +230,62 @@ struct BST {
                 return 0;
         }
     }
+
+    int height() const {
+        return heightHelper(root.get());
+    }
+
+    int heightHelper(Node<T>* node) const {
+        if (!node) {
+            return -1; // Height of an empty tree is -1
+        }
+        int leftHeight = heightHelper(node->left.get());
+        int rightHeight = heightHelper(node->right.get());
+        return 1 + std::max(leftHeight, rightHeight);
+    }
+
+    void ancestors(T val) const {
+        std::vector<T> ancestorList;
+        if (findAncestors(root.get(), val, ancestorList)) {
+            std::cout << "Ancestors of " << val << ": ";
+            for (const auto& ancestor : ancestorList) {
+                std::cout << ancestor << " ";
+            }
+            std::cout << std::endl;
+        } else {
+            std::cout << "Value " << val << " not found in the BST." << std::endl;
+        }
+    }
+
+    bool findAncestors(Node<T>* node, T val, std::vector<T>& ancestorList) const {
+        if (!node) {
+            return false;
+        }
+        if (node->data == val) {
+            return true;
+        }
+        if (findAncestors(node->left.get(), val, ancestorList) || findAncestors(node->right.get(), val, ancestorList)) {
+            ancestorList.push_back(node->data);
+            return true;
+        }
+        return false;
+    }
+
+    int whatLevelAmI(T val) const {
+        return findLevel(root.get(), val, 0);
+    }
+
+    int findLevel(Node<T>* node, T val, int level) const {
+        if (!node) {
+            return -1;
+        }
+        if (node->data == val) {
+            return level;
+        }
+        int leftLevel = findLevel(node->left.get(), val, level + 1);
+        if (leftLevel != -1) {
+            return leftLevel;
+        }
+        return findLevel(node->right.get(), val, level + 1);
+    }
 };

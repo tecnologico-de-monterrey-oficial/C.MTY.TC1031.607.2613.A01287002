@@ -35,6 +35,12 @@ int main() {
     std::cout << std::endl;
     std::cout << "Pre-order traversal of the BST: ";
     tree.visit(PRE_ORDER); 
-
+    tree.visit(IN_ORDER);
+    tree.visit(POST_ORDER);
+    tree.visit(LEVEL_ORDER);
+    std::cout << std::endl;
+    std::cout << "Height of the BST: " << tree.height() << std::endl;
+    tree.ancestors(40);
+    std::cout << "Level of 40: " << tree.whatLevelAmI(40) << std::endl;
     return 0;
 }
