@@ -8,10 +8,19 @@ int main() {
     heap.insert(5);
     heap.insert(15);
 
-    std::cout << "Heap elements after insertion: ";
+    std::cout << "Elementos del heap: ";
     for (const auto& elem : heap.data) {
         std::cout << elem << " ";
     }
     std::cout << std::endl;
+
+    heap.remove(20);
+
+    std::cout << "Elementos del heap después de borrar el 20: ";
+    for (const auto& elem : heap.data) {
+        std::cout << elem << " ";
+    }
+    std::cout << std::endl;
+
     return 0;
 }
