@@ -71,4 +71,11 @@ struct Heap {
         // Reajustamos el heap
         heapifyDown(index);
     }
+
+    void buildHeap(const std::vector<T>& values) {
+        data = values;
+        for (int i = parent(data.size() - 1); i >= 0; --i) {
+            heapifyDown(i);
+        }
+    }
 };
